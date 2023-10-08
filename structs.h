@@ -20,4 +20,12 @@ struct Mosfet {
     struct Node* Gate;
     struct Node* Output;
     bool type;
+    struct Mosfet* next;  // Pointer to the next Mosfet in the MosfetList.
+    struct Mosfet* prev;  // Pointer to the previous Mosfet in the MosfetList.
+};
+
+// Define the MosfetList structure that will hold Mosfet elements.
+struct MosfetList {
+    struct Mosfet* head;  // Pointer to the first Mosfet in the list.
+    struct Mosfet* tail;  // Pointer to the last Mosfet in the list.
 };
