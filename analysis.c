@@ -1,30 +1,9 @@
 #include <stdio.h>  // Standard input/Output Library
 #include <stdlib.h> // Standard Library
 #include "structs.h"  // Include the header file that defines MOSFET structures
+#include "analysis.h"
+
 #define NUMOUTS 8
-
-bool processAllMOSFETs(struct MosfetList* mosfetList);
-bool processMOSFET(struct Mosfet* mosfet);
-void resetMOSFETNodes(struct Mosfet* mosfet);
-bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts);
-
-int main() {
-    // Initialize your MosfetList and NodeList and expectedOutputs here
-    struct MosfetList mosfetList;  // Initialize your MOSFET list
-    // Initialize your MOSFET list (e.g., mosfetList.head = NULL, mosfetList.tail = NULL)
-
-    struct NodeList nodeList;  // Initialize your node list
-    // Initialize your node list (e.g., nodeList.head = NULL, nodeList.tail = NULL)
-
-    bool expectedOutputs[NUMOUTS] = {0, 1, 0, 1, 0, 1, 0, 1};  // Placeholder for expected outputs
-
-    // Process MOSFETs with conditions
-    if (!(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))) {
-        printf("MOSFET processing with conditions successful.\n");
-    }
-
-    return 0;
-}
 
 bool processAllMOSFETs(struct MosfetList* mosfetList) {
     struct Mosfet* currentMOSFET = mosfetList->head;
@@ -87,14 +66,44 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
         firstNode->next->next->isHigh = (i % 2 == 1);
 
         if (processAllMOSFETs(mosfetList)) {
-            return true;  // Error occurred during MOSFET processing
+            return false;  // Error occurred during MOSFET processing
         }
 
         if (!(outputNode->isSet) || !(expectedOutputs[i] == outputNode->isHigh)) {
-            printf("Output node isHigh: %d, Expected: %d\n", outputNode->isHigh, expectedOutputs[i]);
-            return true;  // Error in expected output
+            printf("Set %d\nOutput: %d\nExpected: %d\n", outputNode->isSet, outputNode->isHigh, expectedOutputs[i]);
+            return false;  // Error in expected output
         }
     }
 
-    return false;  // All conditions passed successfully
+    return true;  // All conditions passed successfully
+}
+
+void destroyNodeList(struct NodeList* nodeList) {
+    struct Node* current = nodeList->head;
+    struct Node* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    // Reset the list
+    nodeList->head = NULL;
+    nodeList->tail = NULL;
+}
+
+void destroyMosfetList(struct MosfetList* mosfetList) {
+    struct Mosfet* current = mosfetList->head;
+    struct Mosfet* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    // Reset the list
+    mosfetList->head = NULL;
+    mosfetList->tail = NULL;
 }

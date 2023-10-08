@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "networkGeneration.h"
 #include "structs.h"
+#include "analysis.h"
 #include <stdlib.h>
 #define NUMOUTS 2
 
@@ -17,10 +18,13 @@ int main(int argc, char ** argv) {
     bool expectedOutputs[NUMOUTS] = {0, 1};  // Placeholder for expected outputs
 
     // Process MOSFETs with conditions
-    if (!(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))) {
-        printf("MOSFET processing with conditions successful.\n");
+    while () {
+        initializeNetwork(&nodeList, &mosfetList);
+        processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS)
+        destroyNodeList(&nodeList);
+        destroyMosfetList(&mosfetList);
     }
-
+    printf("MOSFET processing with conditions successful.\n");
     return 0;
 }
 
