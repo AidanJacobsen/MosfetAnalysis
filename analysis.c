@@ -71,11 +71,11 @@ void resetMOSFETNodes(struct Mosfet* mosfet) {
     }
 }
 
-bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs) {
+bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts) {
     struct Node* outputNode = nodeList->head->next->next->next;
     struct Node* firstNode = nodeList->head;
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < numOuts; i++) {
         resetMOSFETNodes(mosfetList);
 
         // Set node properties based on the iteration
