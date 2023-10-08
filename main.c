@@ -18,9 +18,9 @@ int main(int argc, char ** argv) {
     bool expectedOutputs[NUMOUTS] = {0, 1};  // Placeholder for expected outputs
 
     // Process MOSFETs with conditions
-    while () {
+    while(1) {
         initializeNetwork(&nodeList, &mosfetList);
-        processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS)
+        processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS);
         destroyNodeList(&nodeList);
         destroyMosfetList(&mosfetList);
     }
