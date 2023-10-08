@@ -88,45 +88,44 @@ bool copyMosfetList(MosfetList* destList, const MosfetList* srcList) {
 }
 
 // Function to initialize the network with 4 initial nodes and 1 Mosfet.
-void initializeNetwork() {
+void initializeNetwork(NodeList* nList, MosfetList* mList) {
 
     // Initialize a NodeList with 4 initial Nodes.
-    NodeList nList;
-    nList.head = NULL;
-    nList.tail = NULL;
+    nList->head = NULL;
+    nList->tail = NULL;
     
     for (int i = 0; i < 4; i++) {
         // Create and initialize a new Node.
         Node* newNode = initializeNode();
         
         // Add the new Node to the NodeList.
-        if (nList.head == NULL) {
-            nList.head = newNode;
-            nList.tail = newNode;
+        if (nList->head == NULL) {
+            nList->head = newNode;
+            nList->tail = newNode;
         } else {
-            newNode->prev = nList.tail;
-            nList.tail->next = newNode;
-            nList.tail = newNode;
+            newNode->prev = nList->tail;
+            nList->tail->next = newNode;
+            nList->tail = newNode;
         }
     }
     
     // Create and initialize a Mosfet and add it to the MosfetList.
-    MosfetList mList;
-    mList.head = NULL;
-    mList.tail = NULL;
+    ;
+    mList->head = NULL;
+    mList->tail = NULL;
     
     // Replace these with actual Node pointers and boolean values.
-    Node* inputNode = nList.head;
-    Node* gateNode = nList.head->next;
-    Node* outputNode = nList.tail;
+    Node* inputNode = nList->head;
+    Node* gateNode = nList->head->next;
+    Node* outputNode = nList->tail;
     bool mosfetType = true;
     
-    generateMosfet(&mList, inputNode, gateNode, outputNode, mosfetType);
+    generateMosfet(mList, inputNode, gateNode, outputNode, mosfetType);
 
-    nList.head->isHigh = 2;
-    nList.tail->isHigh = 4;
+    nList->head->isHigh = 2;
+    nList->tail->isHigh = 4;
 
-    printf("%d\n", mList.tail->output->isHigh);
+    printf("%d\n", mList->tail->output->isHigh);
     
     // Add more Mosfets or Nodes to the network as needed.
     // Don't forget to free the memory for all allocated Mosfets, Nodes, and Lists when done.

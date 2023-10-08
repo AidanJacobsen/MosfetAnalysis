@@ -8,7 +8,7 @@
 
 // Function prototype for networkGeneration.
 Node* initializeNode();
-void initializeNetwork();
+void initializeNetwork(NodeList* nList, MosfetList* mList);
 Mosfet* generateMosfet(MosfetList* mList, Node* inputNode, Node* gateNode, Node* outputNode, bool type);
 
 

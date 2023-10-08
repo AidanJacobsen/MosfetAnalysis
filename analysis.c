@@ -1,7 +1,12 @@
-#include <stdio.h>  // Standard Input/Output Library
+#include <stdio.h>  // Standard input/Output Library
 #include <stdlib.h> // Standard Library
 #include "structs.h"  // Include the header file that defines MOSFET structures
 #define NUMOUTS 8
+
+bool processAllMOSFETs(struct MosfetList* mosfetList);
+bool processMOSFET(struct Mosfet* mosfet);
+void resetMOSFETNodes(struct Mosfet* mosfet);
+bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts);
 
 int main() {
     // Initialize your MosfetList and NodeList and expectedOutputs here
@@ -36,39 +41,33 @@ bool processAllMOSFETs(struct MosfetList* mosfetList) {
     return 0;
 }
 
-bool processMOSFET(struct Mosfet* mosfet, ) {
-    if (mosfet->type && mosfet->Input->isSet && mosfet->Input->isHigh && mosfet->Gate->isSet && !(mosfet->Gate->isHigh)) {
-        if(mosfet->Output->isSet && !(mosfet->Output->isHigh)){
+bool processMOSFET(struct Mosfet* mosfet) {
+    if (mosfet->type && mosfet->input->isSet && mosfet->input->isHigh && mosfet->gate->isSet && !(mosfet->gate->isHigh)) {
+        if(mosfet->output->isSet && !(mosfet->output->isHigh)){
             printf("error 1=0");
             return 1;
         }    
-        mosfet->Output->isSet = true;
-        mosfet->Output->isHigh = true;
-        return 0
+        mosfet->output->isSet = true;
+        mosfet->output->isHigh = true;
+        return 0;
 
-    } else if (!(mosfet->type) && mosfet->Input->isSet && !(mosfet->Input->isHigh) && mosfet->Gate->isSet && mosfet->Gate->isHigh) {
-        if(mosfet->Output->isSet && mosfet->Output->isHigh){
+    } else if (!(mosfet->type) && mosfet->input->isSet && !(mosfet->input->isHigh) && mosfet->gate->isSet && mosfet->gate->isHigh) {
+        if(mosfet->output->isSet && mosfet->output->isHigh){
             printf("error 0=1");
             return 1;
         }        
-        mosfet->Output->isSet = true;
-        return 0
+        mosfet->output->isSet = true;
+        return 0;
     }
-    
+    return 0;
 }
 
-void resetMOSFETNodes(struct Mosfet* mosfet) {
-    while (mosfet != NULL) {
-        mosfet->Input->isSet = false;
-        mosfet->Input->isHigh = false;
+void resetNodes(struct Node* node) {
+    while (node != NULL) {
+        node->isSet = false;
+        node->isHigh = false;
 
-        mosfet->Gate->isSet = false;
-        mosfet->Gate->isHigh = false;
-
-        mosfet->Output->isSet = false;
-        mosfet->Output->isHigh = false;
-
-        mosfet = mosfet->next;  // Move to the next MOSFET
+        node = node->next;  // Move to the next node
     }
 }
 
@@ -77,7 +76,7 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
     struct Node* firstNode = nodeList->head;
 
     for (int i = 0; i < numOuts; i++) {
-        resetMOSFETNodes(mosfetList);
+        resetNodes(firstNode);
 
         // Set node properties based on the iteration
         firstNode->isSet = true;
