@@ -1,6 +1,6 @@
 #include <stdio.h>  // Standard Input/Output Library
 #include <stdlib.h> // Standard Library
-#include "mosfet.h"  // Include the header file that defines MOSFET structures
+#include "structs.h"  // Include the header file that defines MOSFET structures
 
 int main() {
     // Initialize your MosfetList and NodeList and expectedOutputs here
