@@ -1,6 +1,7 @@
 #include <stdio.h>  // Standard Input/Output Library
 #include <stdlib.h> // Standard Library
 #include "structs.h"  // Include the header file that defines MOSFET structures
+#define NUMOUTS 8
 
 int main() {
     // Initialize your MosfetList and NodeList and expectedOutputs here
@@ -10,10 +11,10 @@ int main() {
     struct NodeList nodeList;  // Initialize your node list
     // Initialize your node list (e.g., nodeList.head = NULL, nodeList.tail = NULL)
 
-    bool expectedOutputs[8] = {0, 1, 0, 1, 0, 1, 0, 1};  // Placeholder for expected outputs
+    bool expectedOutputs[NUMOUTS] = {0, 1, 0, 1, 0, 1, 0, 1};  // Placeholder for expected outputs
 
     // Process MOSFETs with conditions
-    if (!(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs))) {
+    if (!(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))) {
         printf("MOSFET processing with conditions successful.\n");
     }
 
