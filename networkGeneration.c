@@ -1,8 +1,10 @@
 #include <stdbool.h>
 #include <stdlib.h>  // For memory allocation functions
 #include <stdio.h>
-
+#include "analysis.h"
 #include "structs.h"
+#define NUMOUTS 8
+
 
 // Define the structures as previously mentioned.
 
@@ -151,7 +153,7 @@ bool addNode(NodeList* nodeList) {
 void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft) {
     mosfetsLeft -= 1;
     Node* inputNode = nodeList->head;
-
+    expectedOutputs = {};
     // Loop through the first node.
     while (inputNode != NULL) {
         Node* gateNode = nodeList->head;
@@ -184,6 +186,8 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                             }
                             else
                             {
+                                if(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))
+                                    printf("Success");
                                 //BASE CASE
                                 (*combinationCounter) ++;
                             }
@@ -237,6 +241,8 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                             else
                             {
                                 //BASE CASE
+                                if(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))
+                                    printf("Success");
                                 (*combinationCounter) ++;
                             }
                         }
@@ -258,44 +264,57 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
 
 
 // Function to initialize the network with 4 initial nodes and 1 Mosfet.
-void initializeNetwork() {
+void initializeNetwork(NodeList* nList, MosfetList* mList) {
 
     // Initialize a NodeList with 4 initial Nodes.
-    NodeList nList;
-    nList.head = NULL;
-    nList.tail = NULL;
+    nList->head = NULL;
+    nList->tail = NULL;
     
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         // Create and initialize a new Node.
         Node* newNode = initializeNode();
         
         // Add the new Node to the NodeList.
-        if (nList.head == NULL) {
-            nList.head = newNode;
-            nList.tail = newNode;
+        if (nList->head == NULL) {
+            nList->head = newNode;
+            nList->tail = newNode;
         } else {
-            newNode->prev = nList.tail;
-            nList.tail->next = newNode;
-            nList.tail = newNode;
+            newNode->prev = nList->tail;
+            nList->tail->next = newNode;
+            nList->tail = newNode;
         }
     }
     
     // Create and initialize a Mosfet and add it to the MosfetList.
-    MosfetList mList;
-    mList.head = NULL;
-    mList.tail = NULL;
+    ;
+    mList->head = NULL;
+    mList->tail = NULL;
     
-    Node* A = nList.head;
-    Node* B = nList.head->next;
-    Node* S = nList.head->next->next;
-    Node* O = nList.head->next->next->next;
+    // // Replace these with actual Node pointers and boolean values.
+    // Node* inputNode = nList->head;
+    // Node* gateNode = nList->head->next;
+    // Node* outputNode = nList->tail;
+    // bool mosfetType = true;
+    
+    // generateMosfet(mList, inputNode, gateNode, outputNode, mosfetType);
+
+    // nList->head->isHigh = 2;
+    // nList->tail->isHigh = 4;
+
+    // printf("%d\n", mList->tail->output->isHigh);
+    Node* A = nList->head;
+    Node* B = nList->head->next;
+    Node* S = nList->head->next->next;
+    Node* O = nList->head->next->next->next;
+    Node* H = nList->head->next->next->next->next;
+    Node* L = nList->head->next->next->next->next->next;
 
     A->isDriving = 1;//Can't be driven
     B->isDriving = 1;//Can't be driven
     S->isDriving = 1;//Can't be driven
 
     int combinationCounter = 0;
-    generateAllCombinations(&nList, &mList, &combinationCounter, 5);
+    generateAllCombinations(nList, mList, &combinationCounter, 2);
     printf("Total combinations generated: %d\n", combinationCounter);
     
     // Add more Mosfets or Nodes to the network as needed.

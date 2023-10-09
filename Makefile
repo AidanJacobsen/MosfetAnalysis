@@ -5,7 +5,7 @@ ERROR = -Wvla -Werror
 GCC = gcc -std=c99 -g $(TESTFLAGS) $(WARNING) $(ERROR)
 VAL = valgrind --tool=memcheck --log-file=memcheck.txt --leak-check=full --verbose
 
-SRCS = main.c networkGeneration.c
+SRCS = main.c networkGeneration.c analysis.c 
 OBJS = $(SRCS:%.c=%.o)
 
 $(PROJECT_NAME): $(OBJS)

@@ -1,24 +1,9 @@
-#include <stdio.h>  // Standard Input/Output Library
+#include <stdio.h>  // Standard input/Output Library
 #include <stdlib.h> // Standard Library
 #include "structs.h"  // Include the header file that defines MOSFET structures
+#include "analysis.h"
 
-int main() {
-    // Initialize your MosfetList and NodeList and expectedOutputs here
-    struct MosfetList mosfetList;  // Initialize your MOSFET list
-    // Initialize your MOSFET list (e.g., mosfetList.head = NULL, mosfetList.tail = NULL)
-
-    struct NodeList nodeList;  // Initialize your node list
-    // Initialize your node list (e.g., nodeList.head = NULL, nodeList.tail = NULL)
-
-    bool expectedOutputs[8] = {0, 1, 0, 1, 0, 1, 0, 1};  // Placeholder for expected outputs
-
-    // Process MOSFETs with conditions
-    if (!(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs))) {
-        printf("MOSFET processing with conditions successful.\n");
-    }
-
-    return 0;
-}
+#define NUMOUTS 8
 
 bool processAllMOSFETs(struct MosfetList* mosfetList) {
     struct Mosfet* currentMOSFET = mosfetList->head;
@@ -35,66 +20,99 @@ bool processAllMOSFETs(struct MosfetList* mosfetList) {
     return 0;
 }
 
-bool processMOSFET(struct Mosfet* mosfet, ) {
-    if (mosfet->type && mosfet->Input->isSet && mosfet->Input->isHigh && mosfet->Gate->isSet && !(mosfet->Gate->isHigh)) {
-        if(mosfet->Output->isSet && !(mosfet->Output->isHigh)){
+bool processMOSFET(struct Mosfet* mosfet) {
+    if (mosfet->type && mosfet->input->isSet && mosfet->input->isHigh && mosfet->gate->isSet && !(mosfet->gate->isHigh)) {
+        if(mosfet->output->isSet && !(mosfet->output->isHigh)){
             printf("error 1=0");
             return 1;
         }    
-        mosfet->Output->isSet = true;
-        mosfet->Output->isHigh = true;
-        return 0
+        mosfet->output->isSet = true;
+        mosfet->output->isHigh = true;
+        return 0;
 
-    } else if (!(mosfet->type) && mosfet->Input->isSet && !(mosfet->Input->isHigh) && mosfet->Gate->isSet && mosfet->Gate->isHigh) {
-        if(mosfet->Output->isSet && mosfet->Output->isHigh){
+    } else if (!(mosfet->type) && mosfet->input->isSet && !(mosfet->input->isHigh) && mosfet->gate->isSet && mosfet->gate->isHigh) {
+        if(mosfet->output->isSet && mosfet->output->isHigh){
             printf("error 0=1");
             return 1;
         }        
-        mosfet->Output->isSet = true;
-        return 0
+        mosfet->output->isSet = true;
+        return 0;
     }
-    
+    return 0;
 }
 
-void resetMOSFETNodes(struct Mosfet* mosfet) {
-    while (mosfet != NULL) {
-        mosfet->Input->isSet = false;
-        mosfet->Input->isHigh = false;
+void resetNodes(struct Node* node) {
+    while (node != NULL) {
+        node->isSet = false;
+        node->isHigh = false;
 
-        mosfet->Gate->isSet = false;
-        mosfet->Gate->isHigh = false;
-
-        mosfet->Output->isSet = false;
-        mosfet->Output->isHigh = false;
-
-        mosfet = mosfet->next;  // Move to the next MOSFET
+        node = node->next;  // Move to the next node
     }
 }
 
-bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs) {
-    struct Node* outputNode = nodeList->head->next->next->next;
-    struct Node* firstNode = nodeList->head;
+bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts) {
+    Node* A = nList.head;
+    Node* B = nList.head->next;
+    Node* S = nList.head->next->next;
+    Node* O = nList.head->next->next->next;
+    Node* H = nList.head->next->next->next->next;
+    Node* L = nList.head->next->next->next->next->next;
+    for (int i = 0; i < numOuts; i++) {
+        resetNodes(firstNode);
 
-    for (int i = 0; i < 8; i++) {
-        resetMOSFETNodes(mosfetList);
+
 
         // Set node properties based on the iteration
-        firstNode->isSet = true;
-        firstNode->isHigh = (i > 3);
-        firstNode->next->isSet = true;
-        firstNode->next->isHigh = (i > 5 || (i < 4 && i > 1));
-        firstNode->next->next->isSet = true;
-        firstNode->next->next->isHigh = (i % 2 == 1);
+        A->isSet = true;
+        A->isHigh = (i > 3);
+        B->isSet = true;
+        B->isHigh = (i > 5 || (i < 4 && i > 1));
+        S->isSet = true;
+        S->isHigh = (i % 2 == 1);
+        H->isSet = true;
+        H->isHigh = 1;
+        L->isSet = true;
+        L->isHigh = 0;
 
         if (processAllMOSFETs(mosfetList)) {
-            return true;  // Error occurred during MOSFET processing
+            return false;  // Error occurred during MOSFET processing
         }
 
-        if (!(outputNode->isSet) || !(expectedOutputs[i] == outputNode->isHigh)) {
-            printf("Output node isHigh: %d, Expected: %d\n", outputNode->isHigh, expectedOutputs[i]);
-            return true;  // Error in expected output
+        if (!(O->isSet) || !(expectedOutputs[i] == O->isHigh)) {
+            printf("Set %d\nOutput: %d\nExpected: %d\n", O->isSet, O->isHigh, expectedOutputs[i]);
+            return false;  // Error in expected output
         }
     }
 
-    return false;  // All conditions passed successfully
+    return true;  // All conditions passed successfully
+}
+
+void destroyNodeList(struct NodeList* nodeList) {
+    struct Node* current = nodeList->head;
+    struct Node* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    // Reset the list
+    nodeList->head = NULL;
+    nodeList->tail = NULL;
+}
+
+void destroyMosfetList(struct MosfetList* mosfetList) {
+    struct Mosfet* current = mosfetList->head;
+    struct Mosfet* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    // Reset the list
+    mosfetList->head = NULL;
+    mosfetList->tail = NULL;
 }
