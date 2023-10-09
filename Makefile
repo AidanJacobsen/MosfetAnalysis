@@ -17,7 +17,7 @@ $(PROJECT_NAME): $(OBJS)
 testall: test1
 
 testmemory: $(PROJECT_NAME)
-	$(VAL) ./$(PROJECT_NAME) inputs/test6in inputs/test6post output6
+	$(VAL) ./$(PROJECT_NAME)
 
 test1: $(PROJECT_NAME)
 	./$(PROJECT_NAME)

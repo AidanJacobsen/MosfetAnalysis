@@ -64,28 +64,52 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
             case 0:
                 A->isHigh = 0;
                 B->isHigh = 0;
+                S->isHigh = 0;
                 break;
             case 1:
                 A->isHigh = 0;
-                B->isHigh = 1;
+                B->isHigh = 0;
+                S->isHigh = 1;
                 break;
             case 2:
-                A->isHigh = 1;
-                B->isHigh = 0;
+                A->isHigh = 0;
+                B->isHigh = 1;
+                S->isHigh = 0;
                 break;
             case 3:
+                A->isHigh = 0;
+                B->isHigh = 1;
+                S->isHigh = 1;
+                break;
+            case 4:
+                A->isHigh = 1;
+                B->isHigh = 0;
+                S->isHigh = 0;
+                break;
+            case 5:
+                A->isHigh = 1;
+                B->isHigh = 0;
+                S->isHigh = 1;
+                break;
+            case 6:
                 A->isHigh = 1;
                 B->isHigh = 1;
+                S->isHigh = 0;
+                break;
+            case 7:
+                A->isHigh = 1;
+                B->isHigh = 1;
+                S->isHigh = 1;
                 break;
             default:
                 A->isHigh = 0;
                 B->isHigh = 0;
+                S->isHigh = 0;
         }
         A->isSet = true;
         B->isSet = true;
 
         S->isSet = true;
-        S->isHigh = 0;
 
         H->isSet = true;
         H->isHigh = 1;

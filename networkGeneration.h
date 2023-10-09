@@ -13,12 +13,12 @@ Node* initializeNode();
 void initializeNetwork(NodeList* nList, MosfetList* mList);
 Mosfet* generateMosfet(MosfetList* mList, Node* inputNode, Node* gateNode, Node* outputNode, bool type);
 void removeMosfet(MosfetList* mosfetList, Mosfet* targetMosfet);
-void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft);
+void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, unsigned long long * combinationCounter, int mosfetsLeft);
 bool addNode(NodeList* nodeList);
 void removeNode(NodeList* nodeList, Node* targetNode);
 void printNodes(NodeList * list);
 void printMosfetArray(MosfetList * list);
 void printMosfet(Mosfet * mosfet, FILE* file);
-int getNodeIndex(Node * node, FILE, file);
+int getNodeIndex(Node * node, FILE* file);
 
 #endif  // NETWORK_GENERATION_H

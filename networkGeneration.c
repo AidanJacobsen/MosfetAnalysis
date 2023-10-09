@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "analysis.h"
 #include "structs.h"
-#define NUMOUTS 4
+#define NUMOUTS 8
 
 
 // Define the structures as previously mentioned.
@@ -104,7 +104,7 @@ void printMosfet(Mosfet * mosfet, FILE* file)
 
 void printMosfetArray(MosfetList * list)
 {
-    FILE* file = fopen("Sucessful_Files.txt","a");
+    FILE* file = fopen("Mux_2_1_x6.txt","a");
 
     Mosfet * currentFet = list->head;
     while(currentFet != NULL)
@@ -227,10 +227,10 @@ bool addNode(NodeList* nodeList) {
 void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, unsigned long long * combinationCounter, int mosfetsLeft, int * succesCounter) {
     mosfetsLeft -= 1;
     Node* inputNode = nodeList->head;
-    bool expectedOutputs[NUMOUTS] = {1, 1, 1, 0};  // Placeholder for expected outputs
+    bool expectedOutputs[NUMOUTS] = {0, 0, 1, 0, 0 , 1, 1, 1};  // Placeholder for expected outputs
     // Loop through the first node.
     while (inputNode != NULL) {
-        Node* gateNode = nodeList->head;
+        Node* gateNode = nodeList->head->next->next->next;//Don't use a, b, s to drive sources
 
         while (gateNode != NULL) {
             Node* outputNode = nodeList->head;
@@ -408,10 +408,14 @@ void initializeNetwork(NodeList* nList, MosfetList* mList) {
 
     int succesCounter = 0;
     unsigned long long combinationCounter = 0;
-    generateAllCombinations(nList, mList, &combinationCounter, 4, &succesCounter);
+    generateAllCombinations(nList, mList, &combinationCounter, 6, &succesCounter);
     printf("Total combinations generated: %llu\n", combinationCounter);
     printf("Total successful combinations generated: %d\n", succesCounter);
     
     // Add more Mosfets or Nodes to the network as needed.
     // Don't forget to free the memory for all allocated Mosfets, Nodes, and Lists when done.
+    while(nList->head != NULL)
+    {
+        removeNode(nList, nList->tail);
+    }
 }
