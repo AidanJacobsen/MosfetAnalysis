@@ -7,6 +7,7 @@
 typedef struct Node {
     bool isSet;
     bool isHigh;
+    bool isDriving;
     struct Node* next;  // Pointer to the next Node in the NodeList.
     struct Node* prev;  // Pointer to the previous Node in the NodeList.
 } Node;
