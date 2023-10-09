@@ -417,7 +417,7 @@ void initializeNetwork(NodeList* nList, MosfetList* mList) {
     int succesCounter = 0;
     unsigned long long combinationCounter = 0;
     generateAllCombinations(nList, mList, &combinationCounter, 4, &succesCounter);
-    printf("Total combinations generated: %d\n", combinationCounter);
+    printf("Total combinations generated: %llu\n", combinationCounter);
     printf("Total successful combinations generated: %d\n", succesCounter);
     
     // Add more Mosfets or Nodes to the network as needed.
