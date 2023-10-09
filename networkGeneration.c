@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "analysis.h"
 #include "structs.h"
-#define NUMOUTS 2
+#define NUMOUTS 4
 
 
 // Define the structures as previously mentioned.
@@ -232,10 +232,10 @@ bool addNode(NodeList* nodeList) {
     return true;
 }
 
-void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft, int * succesCounter) {
+void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, unsigned long long * combinationCounter, int mosfetsLeft, int * succesCounter) {
     mosfetsLeft -= 1;
     Node* inputNode = nodeList->head;
-    bool expectedOutputs[NUMOUTS] = {1, 0};  // Placeholder for expected outputs
+    bool expectedOutputs[NUMOUTS] = {1, 1, 1, 0};  // Placeholder for expected outputs
     // Loop through the first node.
     while (inputNode != NULL) {
         Node* gateNode = nodeList->head;
@@ -268,17 +268,18 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                             }
                             else
                             {
-                                printf("Case %d:\n", *combinationCounter);
+                                //printf("Case %d:\n", *combinationCounter);
                                 if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
                                 {
                                     printf("Success\n");
                                     (*succesCounter)++;
                                     printNodes(nodeList);
                                     printMosfetArray(mosfetList);
+                                    printf("\n\n");
                                 }
                                 //BASE CASE
                                 (*combinationCounter) ++;
-                                printf("\n\n");
+                                //printf("\n\n");
                             }
                         }
 
@@ -294,67 +295,71 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
         inputNode = inputNode->next;
     }
 
-    addNode(nodeList);
-    inputNode = nodeList->head;
+    if(mosfetsLeft != 0)
+    {
+        addNode(nodeList);
+        inputNode = nodeList->head;
 
-    // Loop through the first node.
-    while (inputNode != NULL) {
-        Node* gateNode = nodeList->head;
+        // Loop through the first node.
+        while (inputNode != NULL) {
+            Node* gateNode = nodeList->head;
 
-        while (gateNode != NULL) {
-            Node* outputNode = nodeList->tail;//only allow final mosfet to be output
+            while (gateNode != NULL) {
+                Node* outputNode = nodeList->tail;//only allow final mosfet to be output
 
-            while (outputNode != NULL) {
-                //Check if combination won't loop (output node won't drive any mosfets already placed and wont drive itself)
-                if(outputNode->isDriving == false && outputNode != inputNode && outputNode != gateNode)
-                {
-                    //Switch between nmos and pmoss
-                    for(int mosfetType = 0; mosfetType < 2; mosfetType++)
+                while (outputNode != NULL) {
+                    //Check if combination won't loop (output node won't drive any mosfets already placed and wont drive itself)
+                    if(outputNode->isDriving == false && outputNode != inputNode && outputNode != gateNode)
                     {
-                        // Create a new Mosfet for the combination.
-                        Mosfet* newMosfet = generateMosfet(mosfetList, inputNode, gateNode, outputNode, mosfetType);//Input, gate, output
-                        
-                        bool previousInputDriving = inputNode->isDriving;
-                        bool previousGateDriving = gateNode->isDriving;
-                        inputNode->isDriving = true;
-                        gateNode->isDriving = true;
+                        //Switch between nmos and pmoss
+                        for(int mosfetType = 0; mosfetType < 2; mosfetType++)
+                        {
+                            // Create a new Mosfet for the combination.
+                            Mosfet* newMosfet = generateMosfet(mosfetList, inputNode, gateNode, outputNode, mosfetType);//Input, gate, output
+                            
+                            bool previousInputDriving = inputNode->isDriving;
+                            bool previousGateDriving = gateNode->isDriving;
+                            inputNode->isDriving = true;
+                            gateNode->isDriving = true;
 
-                        if (newMosfet != NULL) {
-                            // Successfully created a Mosfet with the combination.
-                            // You can choose to perform additional actions here.
+                            if (newMosfet != NULL) {
+                                // Successfully created a Mosfet with the combination.
+                                // You can choose to perform additional actions here.
 
-                            if(mosfetsLeft)
-                            {
-                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft, succesCounter);
-                            }
-                            else
-                            {
-                                //BASE CASE
-                                printf("Case %d:\n", *combinationCounter);
-                                if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
+                                if(mosfetsLeft)
                                 {
-                                    printf("Success");
-                                    (*succesCounter)++;
-                                    printNodes(nodeList);
-                                    printMosfetArray(mosfetList);
+                                    generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft, succesCounter);
                                 }
-                                (*combinationCounter) ++;
-                                printf("\n\n");
+                                else
+                                {
+                                    //BASE CASE
+                                    //printf("Case %d:\n", *combinationCounter);
+                                    if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
+                                    {
+                                        printf("Success");
+                                        (*succesCounter)++;
+                                        printNodes(nodeList);
+                                        printMosfetArray(mosfetList);
+                                        printf("\n\n");
+                                    }
+                                    (*combinationCounter) ++;
+                                    //printf("\n\n");
+                                }
                             }
-                        }
 
-                        inputNode->isDriving = previousInputDriving;
-                        gateNode->isDriving = previousGateDriving;
-                        removeMosfet(mosfetList, newMosfet);
+                            inputNode->isDriving = previousInputDriving;
+                            gateNode->isDriving = previousGateDriving;
+                            removeMosfet(mosfetList, newMosfet);
+                        }
                     }
+                    outputNode = outputNode->next;
                 }
-                outputNode = outputNode->next;
+                gateNode = gateNode->next;
             }
-            gateNode = gateNode->next;
+            inputNode = inputNode->next;
         }
-        inputNode = inputNode->next;
+        removeNode(nodeList, nodeList->tail);
     }
-    removeNode(nodeList, nodeList->tail);
     return;
 }
 
@@ -410,8 +415,8 @@ void initializeNetwork(NodeList* nList, MosfetList* mList) {
     S->isDriving = 1;//Can't be driven
 
     int succesCounter = 0;
-    int combinationCounter = 0;
-    generateAllCombinations(nList, mList, &combinationCounter, 2, &succesCounter);
+    unsigned long long combinationCounter = 0;
+    generateAllCombinations(nList, mList, &combinationCounter, 4, &succesCounter);
     printf("Total combinations generated: %d\n", combinationCounter);
     printf("Total successful combinations generated: %d\n", succesCounter);
     

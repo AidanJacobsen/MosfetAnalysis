@@ -21,7 +21,7 @@ bool processAllMOSFETs(struct MosfetList* mosfetList) {
 bool processMOSFET(struct Mosfet* mosfet) {
     if (mosfet->type && mosfet->input->isSet && mosfet->input->isHigh && mosfet->gate->isSet && !(mosfet->gate->isHigh)) {
         if(mosfet->output->isSet && !(mosfet->output->isHigh)){
-            printf("error 1=0");
+            //printf("error 1=0");
             return 1;
         }    
         mosfet->output->isSet = true;
@@ -30,7 +30,7 @@ bool processMOSFET(struct Mosfet* mosfet) {
 
     } else if (!(mosfet->type) && mosfet->input->isSet && !(mosfet->input->isHigh) && mosfet->gate->isSet && mosfet->gate->isHigh) {
         if(mosfet->output->isSet && mosfet->output->isHigh){
-            printf("error 0=1");
+            //printf("error 0=1");
             return 1;
         }        
         mosfet->output->isSet = true;
@@ -59,11 +59,30 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
         resetNodes(nodeList->head);
 
         // Set node properties based on the iteration
+        switch (i) 
+        {
+            case 0:
+                A->isHigh = 0;
+                B->isHigh = 0;
+                break;
+            case 1:
+                A->isHigh = 0;
+                B->isHigh = 1;
+                break;
+            case 2:
+                A->isHigh = 1;
+                B->isHigh = 0;
+                break;
+            case 3:
+                A->isHigh = 1;
+                B->isHigh = 1;
+                break;
+            default:
+                A->isHigh = 0;
+                B->isHigh = 0;
+        }
         A->isSet = true;
-        A->isHigh = i;
-
         B->isSet = true;
-        B->isHigh = 0;
 
         S->isSet = true;
         S->isHigh = 0;
