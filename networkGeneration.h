@@ -18,7 +18,7 @@ bool addNode(NodeList* nodeList);
 void removeNode(NodeList* nodeList, Node* targetNode);
 void printNodes(NodeList * list);
 void printMosfetArray(MosfetList * list);
-void printMosfet(Mosfet * mosfet);
-int getNodeIndex(Node * node);
+void printMosfet(Mosfet * mosfet, FILE* file);
+int getNodeIndex(Node * node, FILE, file);
 
 #endif  // NETWORK_GENERATION_H
