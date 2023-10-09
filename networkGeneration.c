@@ -43,7 +43,7 @@ Mosfet * generateMosfet(MosfetList* mList,
 }
 
 
-void printNodeIndex(Node * node)
+void printNodeIndex(Node * node, FILE* file)
 {
     int index = 0;
     Node* currentNode = node;
@@ -55,73 +55,65 @@ void printNodeIndex(Node * node)
     }
     switch (index) {
         case 0:
-            printf("A");
+            fprintf(file, "A");
             break;
         case 1:
-            printf("B");
+            fprintf(file, "B");
             break;
         case 2:
-            printf("S");
+            fprintf(file, "S");
             break;
         case 3:
-            printf("Out");
+            fprintf(file, "Out");
             break;
         case 4:
-            printf("High");
+            fprintf(file, "High");
             break;
         case 5:
-            printf("Low");
+            fprintf(file, "Low");
             break;
         default:
-            printf("%d", index);
+            fprintf(file, "%d", index);
             break;
     }
 }
 
-void printMosfet(Mosfet * mosfet)
+void printMosfet(Mosfet * mosfet, FILE* file)
 {
     if(mosfet->type == 1)
     {
-        printf("PMOS(");
-        printNodeIndex(mosfet->input);
-        printf(", ");
-        printNodeIndex(mosfet->gate);
-        printf(", ");
-        printNodeIndex(mosfet->output);
-        printf(")\n");
+        fprintf(file, "PMOS(");
+        printNodeIndex(mosfet->input, file);
+        fprintf(file, ", ");
+        printNodeIndex(mosfet->gate, file);
+        fprintf(file, ", ");
+        printNodeIndex(mosfet->output, file);
+        fprintf(file, ")\n");
     }
     else
     {
-        printf("NMOS(");
-        printNodeIndex(mosfet->input);
-        printf(", ");
-        printNodeIndex(mosfet->gate);
-        printf(", ");
-        printNodeIndex(mosfet->output);
-        printf(")\n");
+        fprintf(file, "NMOS(");
+        printNodeIndex(mosfet->input, file);
+        fprintf(file, ", ");
+        printNodeIndex(mosfet->gate, file);
+        fprintf(file, ", ");
+        printNodeIndex(mosfet->output, file);
+        fprintf(file, ")\n");
     }
 }
 
 void printMosfetArray(MosfetList * list)
 {
+    FILE* file = fopen("Sucessful_Files.txt","a");
+
     Mosfet * currentFet = list->head;
     while(currentFet != NULL)
     {
-        printMosfet(currentFet);
+        printMosfet(currentFet, file);
         currentFet = currentFet->next;
     }
-    fflush(stdout);
-}
-
-void printNodes(NodeList * list)
-{
-    Node * currentNode = list->head;
-    while(currentNode != NULL)
-    {
-        printNodeIndex(currentNode);
-        printf("\n");
-        currentNode = currentNode->next;
-    }
+    fprintf(file, "\n");
+    fclose(file);
 }
 
 // Function to initialize a Node.
@@ -273,7 +265,7 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, unsigne
                                 {
                                     printf("Success\n");
                                     (*succesCounter)++;
-                                    printNodes(nodeList);
+                                    
                                     printMosfetArray(mosfetList);
                                     printf("\n\n");
                                 }
@@ -338,7 +330,7 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, unsigne
                                     {
                                         printf("Success");
                                         (*succesCounter)++;
-                                        printNodes(nodeList);
+                                        
                                         printMosfetArray(mosfetList);
                                         printf("\n\n");
                                     }

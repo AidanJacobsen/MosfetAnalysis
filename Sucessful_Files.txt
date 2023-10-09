@@ -1,0 +1,18 @@
+NMOS(B, A, Out)
+PMOS(High, A, Out)
+
+NMOS(S, A, Out)
+PMOS(High, A, Out)
+
+PMOS(High, A, Out)
+NMOS(B, A, Out)
+
+PMOS(High, A, Out)
+NMOS(S, A, Out)
+
+PMOS(High, A, Out)
+NMOS(Low, A, Out)
+
+NMOS(Low, A, Out)
+PMOS(High, A, Out)
+
