@@ -42,15 +42,63 @@ Mosfet * generateMosfet(MosfetList* mList,
     return newMosfet;
 }
 
+
+void printNodeIndex(Node * node)
+{
+    int index = 0;
+    Node* currentNode = node;
+
+    while(currentNode->prev != NULL)
+    {
+        index++;
+        currentNode = currentNode->prev;
+    }
+    switch (index) {
+        case 0:
+            printf("A");
+            break;
+        case 1:
+            printf("B");
+            break;
+        case 2:
+            printf("S");
+            break;
+        case 3:
+            printf("Out");
+            break;
+        case 4:
+            printf("High");
+            break;
+        case 5:
+            printf("Low");
+            break;
+        default:
+            printf("%d", index);
+            break;
+    }
+}
+
 void printMosfet(Mosfet * mosfet)
 {
     if(mosfet->type == 1)
     {
-        printf("PMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+        printf("PMOS(");
+        printNodeIndex(mosfet->input);
+        printf(", ");
+        printNodeIndex(mosfet->gate);
+        printf(", ");
+        printNodeIndex(mosfet->output);
+        printf(")\n");
     }
     else
     {
-        printf("NMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+        printf("NMOS(");
+        printNodeIndex(mosfet->input);
+        printf(", ");
+        printNodeIndex(mosfet->gate);
+        printf(", ");
+        printNodeIndex(mosfet->output);
+        printf(")\n");
     }
 }
 
@@ -62,6 +110,7 @@ void printMosfetArray(MosfetList * list)
         printMosfet(currentFet);
         currentFet = currentFet->next;
     }
+    fflush(stdout);
 }
 
 void printNodes(NodeList * list)
@@ -69,12 +118,11 @@ void printNodes(NodeList * list)
     Node * currentNode = list->head;
     while(currentNode != NULL)
     {
-        printf("%p\n", (void*)currentNode);
+        printNodeIndex(currentNode);
+        printf("\n");
         currentNode = currentNode->next;
     }
 }
-
-int getNodeIndex
 
 // Function to initialize a Node.
 Node* initializeNode() {

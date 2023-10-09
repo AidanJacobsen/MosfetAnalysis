@@ -19,5 +19,6 @@ void removeNode(NodeList* nodeList, Node* targetNode);
 void printNodes(NodeList * list);
 void printMosfetArray(MosfetList * list);
 void printMosfet(Mosfet * mosfet);
+int getNodeIndex(Node * node);
 
 #endif  // NETWORK_GENERATION_H
