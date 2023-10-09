@@ -50,6 +50,7 @@ Node* initializeNode() {
     }
     newNode->isSet = false;
     newNode->isHigh = false;
+    newNode->isDriving = false;
     newNode->next = NULL;
     newNode->prev = NULL;
     return newNode;
@@ -87,6 +88,175 @@ bool copyMosfetList(MosfetList* destList, const MosfetList* srcList) {
     return true;
 }
 
+void removeMosfet(MosfetList* mosfetList, Mosfet* targetMosfet) {
+    if (mosfetList->head == targetMosfet) {
+        mosfetList->head = targetMosfet->next;
+    }
+    if (mosfetList->tail == targetMosfet) {
+        mosfetList->tail = targetMosfet->prev;
+    }
+    if (targetMosfet->prev != NULL) {
+        targetMosfet->prev->next = targetMosfet->next;
+    }
+    if (targetMosfet->next != NULL) {
+        targetMosfet->next->prev = targetMosfet->prev;
+    }
+    
+    // Free the memory of the removed Mosfet.
+    free(targetMosfet);
+}
+
+
+void removeNode(NodeList* nodeList, Node* targetNode) {
+    if (nodeList->head == targetNode) {
+        nodeList->head = targetNode->next;
+    }
+    if (nodeList->tail == targetNode) {
+        nodeList->tail = targetNode->prev;
+    }
+    if (targetNode->prev != NULL) {
+        targetNode->prev->next = targetNode->next;
+    }
+    if (targetNode->next != NULL) {
+        targetNode->next->prev = targetNode->prev;
+    }
+    
+    // Free the memory of the removed Mosfet.
+    free(targetNode);
+}
+
+// Function to add a node to a NodeList.
+bool addNode(NodeList* nodeList) {
+    // Create and initialize a new Node.
+    Node* newNode = initializeNode();
+    if (newNode == NULL) {
+        // Memory allocation failed.
+        return false;
+    }
+
+    // Check if the NodeList is empty.
+    if (nodeList->head == NULL) {
+        nodeList->head = newNode;
+        nodeList->tail = newNode;
+    } else {
+        // Add the new node to the end of the list.
+        newNode->prev = nodeList->tail;
+        nodeList->tail->next = newNode;
+        nodeList->tail = newNode;
+    }
+
+    return true;
+}
+
+void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft) {
+    mosfetsLeft -= 1;
+    Node* inputNode = nodeList->head;
+
+    // Loop through the first node.
+    while (inputNode != NULL) {
+        Node* gateNode = nodeList->head;
+
+        while (gateNode != NULL) {
+            Node* outputNode = nodeList->head;
+
+            while (outputNode != NULL) {
+                //Check if combination won't loop (output node won't drive any mosfets already placed and wont drive itself)
+                if(outputNode->isDriving == false && outputNode != inputNode && outputNode != gateNode)
+                {
+                    //Switch between nmos and pmoss
+                    for(int mosfetType = 0; mosfetType < 2; mosfetType++)
+                    {
+                        // Create a new Mosfet for the combination.
+                        Mosfet* newMosfet = generateMosfet(mosfetList, inputNode, gateNode, outputNode, mosfetType);//Input, gate, output
+                        
+                        bool previousInputDriving = inputNode->isDriving;
+                        bool previousGateDriving = gateNode->isDriving;
+                        inputNode->isDriving = true;
+                        gateNode->isDriving = true;
+
+                        if (newMosfet != NULL) {
+                            // Successfully created a Mosfet with the combination.
+                            // You can choose to perform additional actions here.
+
+                            if(mosfetsLeft)
+                            {
+                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft);
+                            }
+                            else
+                            {
+                                //BASE CASE
+                                (*combinationCounter) ++;
+                            }
+                        }
+
+                        inputNode->isDriving = previousInputDriving;
+                        gateNode->isDriving = previousGateDriving;
+                        removeMosfet(mosfetList, newMosfet);
+                    }
+                }
+                outputNode = outputNode->next;
+            }
+            gateNode = gateNode->next;
+        }
+        inputNode = inputNode->next;
+    }
+
+    addNode(nodeList);
+    inputNode = nodeList->head;
+
+    // Loop through the first node.
+    while (inputNode != NULL) {
+        Node* gateNode = nodeList->head;
+
+        while (gateNode != NULL) {
+            Node* outputNode = nodeList->tail;//only allow final mosfet to be output
+
+            while (outputNode != NULL) {
+                //Check if combination won't loop (output node won't drive any mosfets already placed and wont drive itself)
+                if(outputNode->isDriving == false && outputNode != inputNode && outputNode != gateNode)
+                {
+                    //Switch between nmos and pmoss
+                    for(int mosfetType = 0; mosfetType < 2; mosfetType++)
+                    {
+                        // Create a new Mosfet for the combination.
+                        Mosfet* newMosfet = generateMosfet(mosfetList, inputNode, gateNode, outputNode, mosfetType);//Input, gate, output
+                        
+                        bool previousInputDriving = inputNode->isDriving;
+                        bool previousGateDriving = gateNode->isDriving;
+                        inputNode->isDriving = true;
+                        gateNode->isDriving = true;
+
+                        if (newMosfet != NULL) {
+                            // Successfully created a Mosfet with the combination.
+                            // You can choose to perform additional actions here.
+
+                            if(mosfetsLeft)
+                            {
+                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft);
+                            }
+                            else
+                            {
+                                //BASE CASE
+                                (*combinationCounter) ++;
+                            }
+                        }
+
+                        inputNode->isDriving = previousInputDriving;
+                        gateNode->isDriving = previousGateDriving;
+                        removeMosfet(mosfetList, newMosfet);
+                    }
+                }
+                outputNode = outputNode->next;
+            }
+            gateNode = gateNode->next;
+        }
+        inputNode = inputNode->next;
+    }
+    removeNode(nodeList, nodeList->tail);
+    return;
+}
+
+
 // Function to initialize the network with 4 initial nodes and 1 Mosfet.
 void initializeNetwork() {
 
@@ -115,18 +285,18 @@ void initializeNetwork() {
     mList.head = NULL;
     mList.tail = NULL;
     
-    // Replace these with actual Node pointers and boolean values.
-    Node* inputNode = nList.head;
-    Node* gateNode = nList.head->next;
-    Node* outputNode = nList.tail;
-    bool mosfetType = true;
-    
-    generateMosfet(&mList, inputNode, gateNode, outputNode, mosfetType);
+    Node* A = nList.head;
+    Node* B = nList.head->next;
+    Node* S = nList.head->next->next;
+    Node* O = nList.head->next->next->next;
 
-    nList.head->isHigh = 2;
-    nList.tail->isHigh = 4;
+    A->isDriving = 1;//Can't be driven
+    B->isDriving = 1;//Can't be driven
+    S->isDriving = 1;//Can't be driven
 
-    printf("%d\n", mList.tail->output->isHigh);
+    int combinationCounter = 0;
+    generateAllCombinations(&nList, &mList, &combinationCounter, 5);
+    printf("Total combinations generated: %d\n", combinationCounter);
     
     // Add more Mosfets or Nodes to the network as needed.
     // Don't forget to free the memory for all allocated Mosfets, Nodes, and Lists when done.
