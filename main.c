@@ -3,7 +3,7 @@
 #include "structs.h"
 #include "analysis.h"
 #include <stdlib.h>
-#define NUMOUTS 2
+#define NUMOUTS 4
 
 int main(int argc, char ** argv) {
     
@@ -15,7 +15,7 @@ int main(int argc, char ** argv) {
 
     initializeNetwork(&nodeList, &mosfetList);
 
-    bool expectedOutputs[NUMOUTS] = {0, 1};  // Placeholder for expected outputs
+    bool expectedOutputs[NUMOUTS] = {1, 1, 1, 0};  // Placeholder for expected outputs
 
     // Process MOSFETs with conditions
     while(1) {

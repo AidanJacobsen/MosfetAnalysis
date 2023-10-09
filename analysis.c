@@ -51,26 +51,35 @@ void resetNodes(struct Node* node) {
 }
 
 bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts) {
-    struct Node* outputNode = nodeList->head->next->next->next;
-    struct Node* firstNode = nodeList->head;
-
+    Node* A = nList.head;
+    Node* B = nList.head->next;
+    Node* S = nList.head->next->next;
+    Node* O = nList.head->next->next->next;
+    Node* H = nList.head->next->next->next->next;
+    Node* L = nList.head->next->next->next->next->next;
     for (int i = 0; i < numOuts; i++) {
         resetNodes(firstNode);
 
+
+
         // Set node properties based on the iteration
-        firstNode->isSet = true;
-        firstNode->isHigh = (i > 3);
-        firstNode->next->isSet = true;
-        firstNode->next->isHigh = (i > 5 || (i < 4 && i > 1));
-        firstNode->next->next->isSet = true;
-        firstNode->next->next->isHigh = (i % 2 == 1);
+        A->isSet = true;
+        A->isHigh = (i > 3);
+        B->isSet = true;
+        B->isHigh = (i > 5 || (i < 4 && i > 1));
+        S->isSet = true;
+        S->isHigh = (i % 2 == 1);
+        H->isSet = true;
+        H->isHigh = 1;
+        L->isSet = true;
+        L->isHigh = 0;
 
         if (processAllMOSFETs(mosfetList)) {
             return false;  // Error occurred during MOSFET processing
         }
 
-        if (!(outputNode->isSet) || !(expectedOutputs[i] == outputNode->isHigh)) {
-            printf("Set %d\nOutput: %d\nExpected: %d\n", outputNode->isSet, outputNode->isHigh, expectedOutputs[i]);
+        if (!(O->isSet) || !(expectedOutputs[i] == O->isHigh)) {
+            printf("Set %d\nOutput: %d\nExpected: %d\n", O->isSet, O->isHigh, expectedOutputs[i]);
             return false;  // Error in expected output
         }
     }
