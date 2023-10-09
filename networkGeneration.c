@@ -42,15 +42,63 @@ Mosfet * generateMosfet(MosfetList* mList,
     return newMosfet;
 }
 
+
+void printNodeIndex(Node * node)
+{
+    int index = 0;
+    Node* currentNode = node;
+
+    while(currentNode->prev != NULL)
+    {
+        index++;
+        currentNode = currentNode->prev;
+    }
+    switch (index) {
+        case 0:
+            printf("A");
+            break;
+        case 1:
+            printf("B");
+            break;
+        case 2:
+            printf("S");
+            break;
+        case 3:
+            printf("Out");
+            break;
+        case 4:
+            printf("High");
+            break;
+        case 5:
+            printf("Low");
+            break;
+        default:
+            printf("%d", index);
+            break;
+    }
+}
+
 void printMosfet(Mosfet * mosfet)
 {
     if(mosfet->type == 1)
     {
-        printf("PMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+        printf("PMOS(");
+        printNodeIndex(mosfet->input);
+        printf(", ");
+        printNodeIndex(mosfet->gate);
+        printf(", ");
+        printNodeIndex(mosfet->output);
+        printf(")\n");
     }
     else
     {
-        printf("NMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+        printf("NMOS(");
+        printNodeIndex(mosfet->input);
+        printf(", ");
+        printNodeIndex(mosfet->gate);
+        printf(", ");
+        printNodeIndex(mosfet->output);
+        printf(")\n");
     }
 }
 
@@ -62,6 +110,7 @@ void printMosfetArray(MosfetList * list)
         printMosfet(currentFet);
         currentFet = currentFet->next;
     }
+    fflush(stdout);
 }
 
 void printNodes(NodeList * list)
@@ -69,12 +118,11 @@ void printNodes(NodeList * list)
     Node * currentNode = list->head;
     while(currentNode != NULL)
     {
-        printf("%p\n", (void*)currentNode);
+        printNodeIndex(currentNode);
+        printf("\n");
         currentNode = currentNode->next;
     }
 }
-
-int getNodeIndex
 
 // Function to initialize a Node.
 Node* initializeNode() {
@@ -184,7 +232,7 @@ bool addNode(NodeList* nodeList) {
     return true;
 }
 
-void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft) {
+void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft, int * succesCounter) {
     mosfetsLeft -= 1;
     Node* inputNode = nodeList->head;
     bool expectedOutputs[NUMOUTS] = {1, 0};  // Placeholder for expected outputs
@@ -216,7 +264,7 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
 
                             if(mosfetsLeft)
                             {
-                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft);
+                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft, succesCounter);
                             }
                             else
                             {
@@ -224,9 +272,9 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                                 if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
                                 {
                                     printf("Success\n");
+                                    (*succesCounter)++;
                                     printNodes(nodeList);
                                     printMosfetArray(mosfetList);
-                                    int i = 7/0;
                                 }
                                 //BASE CASE
                                 (*combinationCounter) ++;
@@ -277,7 +325,7 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
 
                             if(mosfetsLeft)
                             {
-                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft);
+                                generateAllCombinations(nodeList, mosfetList, combinationCounter, mosfetsLeft, succesCounter);
                             }
                             else
                             {
@@ -286,9 +334,9 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                                 if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
                                 {
                                     printf("Success");
+                                    (*succesCounter)++;
                                     printNodes(nodeList);
                                     printMosfetArray(mosfetList);
-                                    int i = 7/0;
                                 }
                                 (*combinationCounter) ++;
                                 printf("\n\n");
@@ -361,9 +409,11 @@ void initializeNetwork(NodeList* nList, MosfetList* mList) {
     B->isDriving = 1;//Can't be driven
     S->isDriving = 1;//Can't be driven
 
+    int succesCounter = 0;
     int combinationCounter = 0;
-    generateAllCombinations(nList, mList, &combinationCounter, 2);
+    generateAllCombinations(nList, mList, &combinationCounter, 2, &succesCounter);
     printf("Total combinations generated: %d\n", combinationCounter);
+    printf("Total successful combinations generated: %d\n", succesCounter);
     
     // Add more Mosfets or Nodes to the network as needed.
     // Don't forget to free the memory for all allocated Mosfets, Nodes, and Lists when done.

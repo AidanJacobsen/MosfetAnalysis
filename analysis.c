@@ -79,12 +79,12 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
         }
 
         if (!(O->isSet) || !(expectedOutputs[i] == O->isHigh)) {
-            printf("Set %d\nOutput: %d\nExpected: %d\n", O->isSet, O->isHigh, expectedOutputs[i]);
+            //printf("Set %d\nOutput: %d\nExpected: %d\n", O->isSet, O->isHigh, expectedOutputs[i]);
             return false;  // Error in expected output
         }
         else
         {
-            printf("Succeeded on %d\n", i);
+            //printf("Succeeded on %d\n", i);
         }
     }
 
