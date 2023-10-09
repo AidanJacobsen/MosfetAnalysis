@@ -16,5 +16,8 @@ void removeMosfet(MosfetList* mosfetList, Mosfet* targetMosfet);
 void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft);
 bool addNode(NodeList* nodeList);
 void removeNode(NodeList* nodeList, Node* targetNode);
+void printNodes(NodeList * list);
+void printMosfetArray(MosfetList * list);
+void printMosfet(Mosfet * mosfet);
 
 #endif  // NETWORK_GENERATION_H

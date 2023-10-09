@@ -3,7 +3,6 @@
 #include "structs.h"
 #include "analysis.h"
 #include <stdlib.h>
-#define NUMOUTS 4
 
 int main(int argc, char ** argv) {
     
@@ -15,15 +14,13 @@ int main(int argc, char ** argv) {
 
     initializeNetwork(&nodeList, &mosfetList);
 
-    bool expectedOutputs[NUMOUTS] = {1, 1, 1, 0};  // Placeholder for expected outputs
+    // bool expectedOutputs[NUMOUTS] = {1, 1, 1, 0};  // Placeholder for expected outputs
 
     // Process MOSFETs with conditions
-    while(1) {
-        initializeNetwork(&nodeList, &mosfetList);
-        processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS);
-        destroyNodeList(&nodeList);
-        destroyMosfetList(&mosfetList);
-    }
+    // initializeNetwork(&nodeList, &mosfetList);
+        // processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS);
+        // destroyNodeList(&nodeList);
+        // destroyMosfetList(&mosfetList);
     printf("MOSFET processing with conditions successful.\n");
     return 0;
 }
