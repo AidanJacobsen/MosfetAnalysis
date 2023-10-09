@@ -3,8 +3,6 @@
 #include "structs.h"  // Include the header file that defines MOSFET structures
 #include "analysis.h"
 
-#define NUMOUTS 8
-
 bool processAllMOSFETs(struct MosfetList* mosfetList) {
     struct Mosfet* currentMOSFET = mosfetList->head;
 
@@ -51,26 +49,28 @@ void resetNodes(struct Node* node) {
 }
 
 bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* mosfetList, bool* expectedOutputs, int numOuts) {
-    Node* A = nList.head;
-    Node* B = nList.head->next;
-    Node* S = nList.head->next->next;
-    Node* O = nList.head->next->next->next;
-    Node* H = nList.head->next->next->next->next;
-    Node* L = nList.head->next->next->next->next->next;
+    Node* A = nodeList->head;
+    Node* B = nodeList->head->next;
+    Node* S = nodeList->head->next->next;
+    Node* O = nodeList->head->next->next->next;
+    Node* H = nodeList->head->next->next->next->next;
+    Node* L = nodeList->head->next->next->next->next->next;
     for (int i = 0; i < numOuts; i++) {
-        resetNodes(firstNode);
-
-
+        resetNodes(nodeList->head);
 
         // Set node properties based on the iteration
         A->isSet = true;
-        A->isHigh = (i > 3);
+        A->isHigh = i;
+
         B->isSet = true;
-        B->isHigh = (i > 5 || (i < 4 && i > 1));
+        B->isHigh = 0;
+
         S->isSet = true;
-        S->isHigh = (i % 2 == 1);
+        S->isHigh = 0;
+
         H->isSet = true;
         H->isHigh = 1;
+
         L->isSet = true;
         L->isHigh = 0;
 
@@ -81,6 +81,10 @@ bool processMOSFETsWithConditions(struct NodeList* nodeList, struct MosfetList* 
         if (!(O->isSet) || !(expectedOutputs[i] == O->isHigh)) {
             printf("Set %d\nOutput: %d\nExpected: %d\n", O->isSet, O->isHigh, expectedOutputs[i]);
             return false;  // Error in expected output
+        }
+        else
+        {
+            printf("Succeeded on %d\n", i);
         }
     }
 

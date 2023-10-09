@@ -1,6 +1,6 @@
 PROJECT_NAME = program
 
-WARNING = -Wall -Wshadow -Wno-unused-function --pedantic -Wno-unused-variable
+WARNING = -Wall -Wshadow -Wno-unused-function --pedantic -Wno-unused-variable -Wno-error=div-by-zero
 ERROR = -Wvla -Werror
 GCC = gcc -std=c99 -g $(TESTFLAGS) $(WARNING) $(ERROR)
 VAL = valgrind --tool=memcheck --log-file=memcheck.txt --leak-check=full --verbose

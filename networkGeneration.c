@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "analysis.h"
 #include "structs.h"
-#define NUMOUTS 8
+#define NUMOUTS 2
 
 
 // Define the structures as previously mentioned.
@@ -41,6 +41,40 @@ Mosfet * generateMosfet(MosfetList* mList,
     }
     return newMosfet;
 }
+
+void printMosfet(Mosfet * mosfet)
+{
+    if(mosfet->type == 1)
+    {
+        printf("PMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+    }
+    else
+    {
+        printf("NMOS(%p, %p, %p)\n", (void*)mosfet->input, (void*)mosfet->gate, (void*)mosfet->output);
+    }
+}
+
+void printMosfetArray(MosfetList * list)
+{
+    Mosfet * currentFet = list->head;
+    while(currentFet != NULL)
+    {
+        printMosfet(currentFet);
+        currentFet = currentFet->next;
+    }
+}
+
+void printNodes(NodeList * list)
+{
+    Node * currentNode = list->head;
+    while(currentNode != NULL)
+    {
+        printf("%p\n", (void*)currentNode);
+        currentNode = currentNode->next;
+    }
+}
+
+int getNodeIndex
 
 // Function to initialize a Node.
 Node* initializeNode() {
@@ -153,7 +187,7 @@ bool addNode(NodeList* nodeList) {
 void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * combinationCounter, int mosfetsLeft) {
     mosfetsLeft -= 1;
     Node* inputNode = nodeList->head;
-    expectedOutputs = {};
+    bool expectedOutputs[NUMOUTS] = {1, 0};  // Placeholder for expected outputs
     // Loop through the first node.
     while (inputNode != NULL) {
         Node* gateNode = nodeList->head;
@@ -186,10 +220,17 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                             }
                             else
                             {
-                                if(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))
-                                    printf("Success");
+                                printf("Case %d:\n", *combinationCounter);
+                                if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
+                                {
+                                    printf("Success\n");
+                                    printNodes(nodeList);
+                                    printMosfetArray(mosfetList);
+                                    int i = 7/0;
+                                }
                                 //BASE CASE
                                 (*combinationCounter) ++;
+                                printf("\n\n");
                             }
                         }
 
@@ -241,9 +282,16 @@ void generateAllCombinations(NodeList* nodeList, MosfetList* mosfetList, int * c
                             else
                             {
                                 //BASE CASE
-                                if(processMOSFETsWithConditions(&nodeList, &mosfetList, expectedOutputs, NUMOUTS))
+                                printf("Case %d:\n", *combinationCounter);
+                                if(processMOSFETsWithConditions(nodeList, mosfetList, expectedOutputs, NUMOUTS))
+                                {
                                     printf("Success");
+                                    printNodes(nodeList);
+                                    printMosfetArray(mosfetList);
+                                    int i = 7/0;
+                                }
                                 (*combinationCounter) ++;
+                                printf("\n\n");
                             }
                         }
 
